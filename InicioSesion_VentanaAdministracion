@@ -1,0 +1,36 @@
+import tkinter as tk
+
+inicioSesion = tk.Tk()
+inicioSesion.title("Inicio de sesion")
+
+inicioSesion.geometry("900x600")
+inicioSesion.resizable(0, 0)
+
+
+def inicioExitoso ():
+
+    #Aca deben de ir los ifs, que determinan que ventana deben de ir dependiendo de sus credeciales
+
+    administradorVentana = tk.Toplevel (inicioSesion)
+    administradorVentana.title("Administrador")
+    administradorVentana.geometry("560x600")
+    administradorVentana.resizable(0, 0)
+    administradorVentana.grab_set()
+
+    gestionarUsuarios=tk.Button(administradorVentana, text="Gestion de Usuarios", font=("Arial", 14,"bold"))
+    gestionarUsuarios.grid(row=0, column=0, padx=175, pady=40)
+
+    catalogoConfiguracion=tk.Button(administradorVentana, text="Catalogo y configuracion", font=("Arial", 14,"bold"))
+    catalogoConfiguracion.grid(row=1, column=0, padx=25, pady=40)
+
+    cMovimientosAajustes=tk.Button(administradorVentana, text="Consultar todos los moviminetos y autorizar ajustes", font=("Arial", 14,"bold"))
+    cMovimientosAajustes.grid(row=2, column=0, padx=25, pady=40)
+
+    regresarInico=tk.Button(administradorVentana, text="Regresar", font=("Arial", 14,"bold"))
+    regresarInico.grid(row=3, column=0, padx=20, pady=100)
+
+
+ingresarButton=tk.Button(inicioSesion, text="Ingresar", width=10,command=inicioExitoso, font=("Arial", 14,"bold"))
+ingresarButton.grid(row=0, column=0, columnspan=2, padx=400, pady=500)
+
+inicioSesion.mainloop()
