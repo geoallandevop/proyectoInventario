@@ -1,0 +1,88 @@
+//Codificación de Conexión a Gestor de Base de datos (SQL Server).
+import pyodbc
+// Codificamos la direccion del repositorio donde se encuentra la base de datos del ordenador.
+conn=pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER=LOQ-WILLIAMS\SQLEXPRESS;DATABASE=SISTEMA_KARDEX;Trusted_Connection=yes;TrustServerCertificate=yes')
+//creamos una funcion que nos permita mostrar los datos ingresados que estan en la tabla
+cursor=conn.cursor(); 
+cursor.execute("SELECT * FROM USUARIOS") // instruccion de SQL Server que hace referencia a una tabla, SELECCIONAR DATOS DE LA TABALA USUARIOS
+
+for row in cursor:
+    print(row) //imprimimos en consola los datos alojados en la tabala.
+
+// Codificación de autenticación de usuarios mediante un Formulario de registro.
+import pyodbc
+
+def obtener_conexion():
+    return pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER=LOQ-WILLIAMS\SQLEXPRESS;DATABASE=SISTEMA_KARDEX;Trusted_Connection=yes;TrustServerCertificate=yes')
+
+
+
+#funcion para validar el inicio de sesion
+def inicio_sesion(txt_usuario, txt_contraseña):
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+
+    query = """SELECT U.ID_USUARIO, U.NOMBRE_COMPLETO, U.PASSW_ORD, R.NOMBRE_ROL FROM USUARIOS U INNER JOIN ROLES R ON U.ID_ROL = R.ID_ROL WHERE U.NOMBRE_COMPLETO = ? AND U.PASSW_ORD = ?"""
+    cursor.execute(query, (txt_usuario, txt_contraseña))
+    usuario_encontrado = cursor.fetchone()
+    conn.close()
+
+    if usuario_encontrado is None:
+        print("Usuario o contraseña incorrectos")
+        return None
+
+    ID_USUARIO, NOMBRE_COMPLETO, PASSW_ORD, NOMBRE_ROL = usuario_encontrado
+
+
+#en base a los roles en la BD validara cada rol y le dara acceso a las funciones que le corresponden a cada rol
+
+    rol_num=str(NOMBRE_ROL).strip() 
+    print(f"Bienvenido {NOMBRE_COMPLETO} con rol: {NOMBRE_ROL}")
+    return{
+        "id_usuario": ID_USUARIO,
+        "usuario":NOMBRE_COMPLETO,
+        "rol":NOMBRE_ROL
+
+    #COLOCAMOS UN CICLO IF PARA VALIDAR LA CONSTRASEÑA INGRESADA POR EL USUARIO CON LA CONTRASEÑA ALMACENADA EN LA BASE DE DATOS
+    #if txt_contraseña == PASSW_ORD:
+      #  print("Bienvenido.. Inicio de sesión exitoso")
+      #  return {
+      #  "id_usuario": ID_USUARIO,
+      #  "usuario":NOMBRE_COMPLETO,
+      #  "rol":ID_ROL.strip()
+   # }
+   # else:
+      #  print("Usuario o contraseña incorrectos")
+    #return None
+        }
+#iniciamos una funcion para determinar los permisos del usuario dependiendo de su rol
+def obtener_permisos(usuario_autentic):
+    rol = usuario_autentic["rol"].strip().upper()
+    print(f"\n-- PANEL DE CONTROL -- ROL: {rol} --\n")
+
+    if rol == "ADMINISTRADOR":
+        print("1. [ACCESO COMPLETO] VER KARDEX")
+        print("2. [ACCESO COMPLETO] REGISTAR ENTRADAS Y SALIDAS")
+        print("3. [ACCESO COMPLETO] CREAR, EDITAR O ELIMINAR PRODUCTOS")
+        print("4. [ACCESO COMPLETO] GESTIONAR USUARIOS")
+        print("5. Salir")
+    elif rol == "JEFE DE AREA":
+        print("1. [ACCESO LIMITADO] VER KARDEX")
+        print("2. [ACCESO LIMITADO] REGISTAR ENTRADAS Y SALIDAS")
+        print("3. [ACCESO BLOQUEADO] CREAR, EDITAR O ELIMINAR PRODUCTOS")
+        print("4. [ACCESO BLOQUEADO] GESTIONAR USUARIOS")
+
+    elif rol == "CONSULTAS":
+            print("1. [ACCESO LIMITADO] VER KARDEX")
+            print("2. [ACCESO BLOQUEADO] REGISTAR ENTRADAS Y SALIDAS")
+            print("3. [ACCESO BLOQUEADO] CREAR, EDITAR O ELIMINAR PRODUCTOS")
+            print("4. [ACCESO BLOQUEADO] GESTIONAR USUARIOS")
+    else:
+        print("Rol no reconocido. Acceso denegado.")    
+
+txt_usuario = input("Ingrese su nombre de usuario: ")
+txt_contraseña = input("Ingrese su contraseña: ")
+
+usuario_sesion = inicio_sesion(txt_usuario, txt_contraseña)
+if usuario_sesion:
+    obtener_permisos(usuario_sesion)
